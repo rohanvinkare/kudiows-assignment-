@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Kudiows_Assignment Overview</title>
+    <style>
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        line-height: 1.8;
+        margin: 0;
+        padding: 0;
+        background-color: #f0f0f0;
+        color: #333;
+      }
+      header {
+        background-color: #007bff;
+        color: #fff;
+        padding: 20px;
+        text-align: center;
+        box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+        position: relative;
+      }
+      header h1 {
+        margin: 0;
+        font-size: 28px;
+      }
+      .header-button {
+        position: absolute;
+        right: 20px;
+        top: 50%;
+        transform: translateY(-50%);
+        background-color: #c9a00d;
+        color: #000;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 5px;
+        text-decoration: none;
+        font-size: 16px;
+        font-weight: bold;
+        transition: background-color 0.3s ease;
+      }
+      .header-button:hover {
+        background-color: #62098e;
+        color: #fff;
+      }
+      .container {
+        max-width: 900px;
+        margin: 30px auto;
+        padding: 20px;
+        background: #fff;
+        border-radius: 8px;
+        box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+      }
+      .important {
+        font-weight: bold;
+        color: red;
+        font-size: 18px;
+        margin-bottom: 20px;
+        display: block;
+        text-align: center;
+      }
+      h2 {
+        color: #007bff;
+        border-bottom: 2px solid #ddd;
+        padding-bottom: 10px;
+        margin-bottom: 20px;
+        font-size: 24px;
+      }
+      h3 {
+        color: #62098e;
+        font-size: 20px;
+        margin-top: 20px;
+        border-left: 4px solid #007bff;
+        padding-left: 10px;
+      }
+      ul {
+        margin: 0;
+        padding: 0;
+        list-style: none;
+      }
+      ul li {
+        margin-bottom: 10px;
+        font-size: 16px;
+        padding-left: 20px;
+        position: relative;
+      }
+      ul li::before {
+        content: "•";
+        color: #007bff;
+        font-weight: bold;
+        display: inline-block;
+        width: 20px;
+        margin-left: -20px;
+      }
+      p {
+        font-size: 16px;
+        margin-bottom: 20px;
+      }
+      .sub-heading {
+        margin-bottom: 10px;
+        font-size: 18px;
+        color: #007bff;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>Kudiows_Assignment Overview</h1>
+      <a href="/signup" class="header-button">View Website</a>
+    </header>
+    <div class="container">
+      <span class="important">
+        <h2>Login with the HR credentials below to see uploaded resumes:</h2>
+        <h3>
+          Click on the "View Website" button in the top right corner to visit
+          the website.
+        </h3>
+        HR Account: Email = kudosware@assign.com | Password = kudosware
+      </span>
+
+      <h2>Project Summary</h2>
+      <ul>
+        <li>
+          <strong>Requirements Fulfilled:</strong> The project meets all
+          specified requirements. It allows job seekers to fill out a signup
+          form with their personal information and upload their resume. It also
+          supports 2FA and Google authentication.
+        </li>
+        <li>
+          <strong>Account Creation:</strong> A valid email address is required
+          for normal user account creation, as an OTP will be sent to verify the
+          email during registration.
+        </li>
+      </ul>
+
+      <h3>Two-Factor Authentication (2FA)</h3>
+      <p>
+        The project implements 2FA to enhance security during user registration.
+        Upon signing up, users receive an OTP (One-Time Password) via email,
+        which must be verified to complete the registration process. This
+        ensures that only valid and accessible email addresses are used.
+      </p>
+
+      <h3>Google Authentication</h3>
+      <p>
+        Google authentication is integrated into the application, allowing users
+        to log in with their Google accounts. This feature automatically
+        retrieves the user's email from Google, streamlining the registration
+        and login process.
+      </p>
+
+      <h2>Tech And Security Summary</h2>
+      <ul>
+        <li>
+          <strong>Unique Keys:</strong> Uses email for local and Google
+          authentication.
+        </li>
+        <li>
+          <strong>JWT Authentication:</strong> Generates and manages JWT tokens
+          for user authentication.
+        </li>
+        <li>
+          <strong>Token Storage:</strong> Stores tokens in Node cache,
+          accessible throughout the project.
+        </li>
+        <li>
+          <strong>Logout Management:</strong> Clears JWT tokens from cache on
+          logout.
+        </li>
+        <li>
+          <strong>Validators:</strong> Validates email format and enforces
+          password restrictions.
+        </li>
+        <li>
+          <strong>Rate Limiting:</strong> Uses the
+          <code>express-rate-limit</code> package to limit request rates and
+          protect against attacks.
+        </li>
+        <li>
+          <strong>2FA (Two-Factor Authentication):</strong> Implements OTP
+          verification using <code>nodemailer</code> and
+          <code>speakeasy</code> during registration.
+        </li>
+        <li>
+          <strong>API Endpoints:</strong> Includes endpoints for login,
+          registration, OTP verification, and OAuth-based authentication.
+        </li>
+      </ul>
+    </div>
+  </body>
+</html>

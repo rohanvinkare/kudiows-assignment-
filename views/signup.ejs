@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sign Up | YourHR</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css"
+      rel="stylesheet"
+    />
+  </head>
+  <body class="bg-gray-100 flex items-center justify-center min-h-screen">
+    <div class="w-full max-w-md p-8 bg-white shadow-md rounded-lg">
+      <h2 class="text-2xl font-bold text-center text-blue-600 mb-6">Sign Up</h2>
+      <p class="text-center text-gray-600 mb-4">
+        Please enter a valid email address. You will receive an OTP for
+        verification.
+      </p>
+      <form id="signupForm" class="space-y-4">
+        <div>
+          <label class="block text-gray-700 text-sm font-bold mb-2" for="email">
+            Email
+          </label>
+          <input
+            type="email"
+            name="email"
+            id="email"
+            class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            required
+          />
+        </div>
+        <div>
+          <label
+            class="block text-gray-700 text-sm font-bold mb-2"
+            for="password"
+          >
+            Password
+          </label>
+          <input
+            type="password"
+            name="password"
+            id="password"
+            class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            required
+          />
+        </div>
+        <div class="flex items-center justify-center">
+          <button
+            id="signupButton"
+            type="submit"
+            class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+          >
+            Sign Up
+          </button>
+        </div>
+      </form>
+
+      <div class="text-center mt-4">
+        <p class="text-gray-600">Or continue with</p>
+      </div>
+
+      <div class="text-center mt-4">
+        <button
+          id="googleButton"
+          class="bg-white border border-gray-300 text-gray-700 py-2 px-4 rounded flex items-center justify-center w-full focus:outline-none focus:shadow-outline hover:bg-gray-100"
+        >
+          <img
+            src="https://developers.google.com/identity/images/g-logo.png"
+            alt="Google Logo"
+            class="w-5 h-5 mr-2"
+          />
+          Continue with Google
+        </button>
+      </div>
+
+      <div class="text-center mt-4">
+        <a href="/login" class="text-blue-600"
+          >Already have an account? Login</a
+        >
+      </div>
+    </div>
+    <script>
+      // Function to show a loading indicator on the button
+      function showLoading(isLoading) {
+        const button = document.querySelector('button[type="submit"]');
+        if (isLoading) {
+          button.disabled = true;
+          button.innerHTML = `<svg
+              class="animate-spin h-5 w-5 mr-3 text-white inline-block"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+            >
+              <circle
+                class="opacity-25"
+                cx="12"
+                cy="12"
+                r="10"
+                stroke="currentColor"
+                stroke-width="4"
+              ></circle>
+              <path
+                class="opacity-75"
+                fill="currentColor"
+                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zM2 12a10 10 0 0110-10V0C4.477 0 0 4.477 0 10h2zm2 0a8 8 0 018-8V0C6.373 0 2 4.373 2 10h2z"
+              ></path>
+            </svg> Signing Up...`;
+        } else {
+          button.disabled = false;
+          button.textContent = "Sign Up";
+        }
+      }
+
+      // Event listener for signup form submission
+      document
+        .getElementById("signupForm")
+        .addEventListener("submit", async function (event) {
+          event.preventDefault(); // Prevent the default form submission
+
+          // Gather form data
+          const formData = new FormData(this);
+          const data = {
+            email: formData.get("email"),
+            password: formData.get("password"),
+          };
+
+          // Store the email in cookies
+          document.cookie = `email=${encodeURIComponent(
+            data.email
+          )}; path=/; max-age=86400`; // max-age=86400 sets the cookie to expire in 1 day (24 hours)
+
+          // Show loading indicator
+          showLoading(true);
+
+          try {
+            const response = await fetch("/auth/register", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json", // Set content type to JSON
+              },
+              body: JSON.stringify(data), // Convert data to JSON string
+            });
+
+            if (response.status === 201) {
+              // Status 201: User registration initiated, OTP sent
+              window.location.href = "/otp";
+            } else if (response.status === 200) {
+              // Status 200: Existing user - new OTP sent
+              alert(
+                "A new OTP has been sent to your email. Please check your inbox."
+              );
+              window.location.href = "/otp"; // Optionally redirect to the OTP page
+            } else if (response.status === 400) {
+              // Status 400: Bad Request - Handle specific errors
+              const errorResponse = await response.json();
+              if (
+                errorResponse.error ===
+                "Email already in use and user is registered"
+              ) {
+                alert("This email is already registered. Please log in.");
+              } else if (
+                errorResponse.error === "Email and password are required"
+              ) {
+                alert("Please enter both email and password.");
+              } else {
+                alert("Error: " + (errorResponse.error || "Bad Request"));
+              }
+            } else {
+              // Handle unexpected status codes
+              const errorResponse = await response.json();
+              alert(
+                "Unexpected error: " +
+                  (errorResponse.error || "An unexpected error occurred.")
+              );
+            }
+          } catch (error) {
+            // Handle any network errors
+            alert("A network error occurred. Please try again later.");
+          } finally {
+            // Hide loading indicator (only hide if there's an error, or it will redirect)
+            showLoading(false);
+          }
+        });
+
+      // Event listener for Google button click
+      document
+        .getElementById("googleButton")
+        .addEventListener("click", function () {
+          // Show loading indicator (optional)
+          showLoading(true);
+
+          // Redirect to the Google authentication route
+          window.location.href =
+            "https://kudiows-assignment.vercel.app/auth/google";
+        });
+    </script>
+  </body>
+</html>

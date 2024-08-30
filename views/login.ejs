@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login | YourHR</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css"
+      rel="stylesheet"
+    />
+  </head>
+  <body class="bg-gray-100 flex items-center justify-center min-h-screen">
+    <div class="w-full max-w-md p-8 bg-white shadow-md rounded-lg">
+      <h2 class="text-2xl font-bold text-center text-blue-600 mb-6">Login</h2>
+      <form id="loginForm" class="space-y-4">
+        <div>
+          <label class="block text-gray-700 text-sm font-bold mb-2" for="email">
+            Email
+          </label>
+          <input
+            type="email"
+            name="email"
+            id="email"
+            class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            required
+          />
+        </div>
+        <div>
+          <label
+            class="block text-gray-700 text-sm font-bold mb-2"
+            for="password"
+          >
+            Password
+          </label>
+          <input
+            type="password"
+            name="password"
+            id="password"
+            class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            required
+          />
+        </div>
+        <div class="flex items-center justify-between">
+          <button
+            class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+            type="submit"
+          >
+            Login
+          </button>
+        </div>
+      </form>
+      <div class="text-center mt-4">
+        <a href="/signup" class="text-blue-600"
+          >Don't have an account? Sign Up</a
+        >
+      </div>
+    </div>
+    <script>
+      document
+        .getElementById("loginForm")
+        .addEventListener("submit", async function (event) {
+          event.preventDefault(); // Prevent default form submission
+
+          // Gather form data
+          const formData = new FormData(this);
+          const data = {
+            email: formData.get("email"),
+            password: formData.get("password"),
+          };
+
+          // Show loading indicator
+          showLoading(true);
+
+          try {
+            const response = await fetch("/auth/login", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json", // Set content type to JSON
+              },
+              body: JSON.stringify(data), // Convert data to JSON string
+            });
+
+            const responseData = await response.json();
+            console.log(response.status);
+
+            if (response.status === 201) {
+              // Special case for admin users
+              const hrResponse = await fetch("/hr-dashboard", {
+                method: "GET",
+                headers: {
+                  Authorization: `Bearer ${responseData.token}`,
+                  Email: data.email,
+                },
+              });
+
+              if (hrResponse.status === 200) {
+                // Redirect to HR dashboard if GET request is successful
+                window.location.href = "/hr-dashboard";
+              }
+            } else if (response.status === 200) {
+              // Regular user case
+              const userResponse = await fetch("/user-dashboard", {
+                method: "GET",
+                headers: {
+                  Authorization: `Bearer ${responseData.token}`,
+                  Email: data.email,
+                },
+              });
+
+              if (userResponse.status === 200) {
+                // Redirect to User dashboard if GET request is successful
+                window.location.href = "/user-dashboard";
+              }
+            } else {
+              // Handle other response statuses
+              const errorMessages =
+                responseData.error || "An unexpected error occurred";
+              alert(`Error: ${errorMessages}`);
+            }
+          } catch (error) {
+            console.error("Login Error:", error);
+            alert("An error occurred. Please try again later.");
+          } finally {
+            // Hide loading indicator
+            showLoading(false);
+          }
+        });
+
+      // Function to show loading indicator (basic example)
+      function showLoading(isLoading) {
+        const button = document.querySelector('button[type="submit"]');
+        if (isLoading) {
+          button.disabled = true;
+          button.textContent = "Logging in...";
+        } else {
+          button.disabled = false;
+          button.textContent = "Login";
+        }
+      }
+
+      // Function to set a cookie
+      function setCookie(name, value, days) {
+        const expires = new Date(
+          Date.now() + days * 24 * 60 * 60 * 1000
+        ).toUTCString();
+        document.cookie = `${name}=${value}; expires=${expires}; path=/; Secure; SameSite=Strict`;
+      }
+    </script>
+  </body>
+</html>

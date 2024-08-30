@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Verify OTP | YourHR</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css"
+      rel="stylesheet"
+    />
+  </head>
+  <body class="bg-gray-100 h-screen flex items-center justify-center">
+    <div class="w-full max-w-md bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
+      <h2 class="text-2xl font-bold text-center text-blue-600 mb-6">
+        Verify OTP
+      </h2>
+      <p class="text-center text-gray-600 mb-4">
+        An OTP has been sent to your email. Please enter it below to complete
+        your registration.
+      </p>
+      <form id="verifyOtpForm">
+        <div class="mb-4">
+          <label class="block text-gray-700 text-sm font-bold mb-2" for="otp">
+            OTP
+          </label>
+          <input
+            type="text"
+            name="otp"
+            id="otp"
+            class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            required
+          />
+        </div>
+        <div class="flex items-center justify-between">
+          <button
+            class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+            type="submit"
+          >
+            Verify OTP
+          </button>
+        </div>
+      </form>
+    </div>
+    <script>
+      // Function to retrieve a specific cookie by name
+      function getCookie(name) {
+        const value = `; ${document.cookie}`;
+        const parts = value.split(`; ${name}=`);
+        if (parts.length === 2)
+          return decodeURIComponent(parts.pop().split(";").shift());
+        return null;
+      }
+
+      // Function to delete a cookie by name
+      function deleteCookie(name) {
+        document.cookie = `${name}=; Max-Age=0; path=/;`;
+      }
+
+      // Function to show a loading indicator (basic example)
+      function showLoading(isLoading) {
+        const button = document.querySelector('button[type="submit"]');
+        if (isLoading) {
+          button.disabled = true;
+          button.textContent = "Verifying...";
+        } else {
+          button.disabled = false;
+          button.textContent = "Verify OTP";
+        }
+      }
+
+      // Event listener for OTP verification form submission
+      document
+        .getElementById("verifyOtpForm")
+        .addEventListener("submit", async function (event) {
+          event.preventDefault(); // Prevent the default form submission
+
+          // Retrieve email from cookies
+          const email = getCookie("email");
+
+          if (!email) {
+            alert(
+              "No email found in cookies. Please ensure you are properly signed up."
+            );
+            return;
+          }
+
+          // Gather OTP from form input
+          const otp = document.getElementById("otp").value.trim();
+
+          // Basic validation for OTP (optional)
+          if (otp.length === 0) {
+            alert("Please enter the OTP sent to your email.");
+            return;
+          }
+
+          // Create JSON object with email and OTP
+          const data = { email, otp };
+
+          // Show loading indicator
+          showLoading(true);
+
+          try {
+            const response = await fetch("/auth/verify-otp", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json", // Set content type to JSON
+              },
+              body: JSON.stringify(data), // Convert data to JSON string
+            });
+
+            if (response.status === 200) {
+              // Status 200: OTP verified successfully, user registration completed
+              deleteCookie("email");
+              window.location.href = "/login";
+            } else if (response.status === 400) {
+              // Status 400: Bad Request - Missing email or OTP
+              alert("Email and OTP are required. Please check your input.");
+            } else if (response.status === 404) {
+              // Status 404: User not found
+              alert(
+                "User not found. Please ensure you are properly signed up."
+              );
+            } else if (response.status === 401) {
+              // Status 401: Invalid or expired OTP
+              alert("Invalid or expired OTP. Please try again.");
+            } else {
+              // Handle unexpected status codes
+              const errorResponse = await response.json();
+              alert(
+                "Unexpected error: " +
+                  (errorResponse.error || "An unexpected error occurred.")
+              );
+            }
+          } catch (error) {
+            // Handle any network errors
+            alert("A network error occurred. Please try again later.");
+          } finally {
+            // Hide loading indicator
+            showLoading(false);
+          }
+        });
+    </script>
+  </body>
+</html>

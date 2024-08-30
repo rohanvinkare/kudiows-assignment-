@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>All Resumes | YourHR</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css"
+      rel="stylesheet"
+    />
+    <style>
+      @media (max-width: 768px) {
+        table {
+          display: block;
+          overflow-x: auto;
+          white-space: nowrap;
+        }
+      }
+    </style>
+  </head>
+  <body class="bg-gray-100">
+    <nav class="bg-blue-600 p-4">
+      <div class="container mx-auto flex justify-between items-center">
+        <h1 class="text-white text-2xl font-bold">YourHR</h1>
+        <div>
+          <button
+            id="logoutButton"
+            class="bg-white text-blue-600 px-4 py-2 rounded-md"
+          >
+            Logout
+          </button>
+        </div>
+      </div>
+    </nav>
+    <div class="container mx-auto p-8">
+      <h2 class="text-3xl font-bold text-blue-600 mb-6">All Resumes</h2>
+      <table
+        class="min-w-full bg-white border border-gray-300 rounded-lg shadow-md"
+      >
+        <thead>
+          <tr>
+            <th class="py-2 px-4 border-b text-left text-gray-600">Email</th>
+            <th class="py-2 px-4 border-b text-left text-gray-600">
+              Date Created
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Rows will be inserted here by JavaScript -->
+        </tbody>
+      </table>
+      <div class="mt-6">
+        <a
+          href="https://drive.google.com/drive/u/1/folders/14cbWMJFVLtxJHY-hXM5PEGLaGvJ9ALMg"
+          class="text-blue-600 underline"
+          target="_blank"
+        >
+          View all resumes on Google Drive
+        </a>
+      </div>
+    </div>
+  </body>
+  <script>
+    document.addEventListener("DOMContentLoaded", async () => {
+      try {
+        // Fetch the resumes from the server
+        const response = await fetch("/all-resumes"); // Adjust the URL if needed
+
+        if (!response.ok) {
+          throw new Error("Failed to fetch resumes");
+        }
+
+        const data = await response.json();
+        const resumes = data.resumes;
+
+        // Select the tbody element
+        const tbody = document.querySelector("table tbody");
+
+        // Clear any existing rows
+        tbody.innerHTML = "";
+
+        // Iterate over resumes and create table rows
+        resumes.forEach((resume) => {
+          const row = document.createElement("tr");
+
+          const emailCell = document.createElement("td");
+          emailCell.textContent = resume.email;
+          emailCell.classList.add("py-2", "px-4", "border-b", "text-gray-700");
+
+          const dateCell = document.createElement("td");
+          dateCell.textContent = new Date(
+            resume.dateCreated
+          ).toLocaleDateString();
+          dateCell.classList.add("py-2", "px-4", "border-b", "text-gray-700");
+
+          row.appendChild(emailCell);
+          row.appendChild(dateCell);
+
+          tbody.appendChild(row);
+        });
+      } catch (error) {
+        console.error("Error fetching resumes:", error);
+        // Optionally display an error message to the user
+      }
+    });
+
+    document
+      .getElementById("logoutButton")
+      .addEventListener("click", async () => {
+        try {
+          // Get email from cookie (if stored) or some other method
+          const email = getCookie("email");
+
+          if (!email) {
+            alert("No user email found.");
+            return;
+          }
+
+          const response = await fetch("/auth/logout", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ email }), // Send email in JSON body
+          });
+
+          if (response.ok) {
+            // Redirect to login page or home page
+            window.location.href = "/login";
+          } else {
+            const errorResponse = await response.json();
+            alert(
+              `Error: ${errorResponse.error || "An unexpected error occurred"}`
+            );
+          }
+        } catch (error) {
+          console.error("Logout Error:", error);
+          alert("An error occurred. Please try again later.");
+        }
+      });
+
+    // Function to get a cookie value by name
+    function getCookie(name) {
+      const value = `; ${document.cookie}`;
+      const parts = value.split(`; ${name}=`);
+      if (parts.length === 2) return parts.pop().split(";").shift();
+    }
+  </script>
+</html>
