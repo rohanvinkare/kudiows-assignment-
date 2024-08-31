@@ -13,9 +13,9 @@ const JWT_SECRET = process.env.JWT_SECRET || 'your_jwt_secret';
 passport.use(new GoogleStrategy({
     clientID: process.env.GOOGLE_CLIENT_ID,
     clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-    callbackURL: process.env.GOOGLE_CALL_BACK_URL,
+    callbackURL: process.env.GOOGLE_CALL_BACK_URL
 }, async (accessToken, refreshToken, profile, done) => {
-    try {
+    try { 
         // Find or create user
         let user = await User.findOne({ email: profile._json.email });
         if (!user) {
