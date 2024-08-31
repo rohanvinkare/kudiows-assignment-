@@ -19,8 +19,9 @@ const mongoURI = process.env.MONGODB_URI;
 const app = express();
 const upload = multer();
 
-
-
+console.log(process.env.GOOGLE_CLIENT_ID);
+console.log(process.env.GOOGLE_CLIENT_SECRET);
+console.log(process.env.GOOGLE_CALL_BACK_URL);
 
 // Serve static files from the 'public' directory
 app.use(express.static('public'));
