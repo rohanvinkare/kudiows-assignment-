@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const passport = require('passport');
 const cookieParser = require('cookie-parser');
+require('dotenv').config("./.env");
 
 const { registerValidation, loginValidation } = require('../validators/user-validator');
 const authController = require('../controllers/auth-controller');

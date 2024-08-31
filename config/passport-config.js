@@ -1,9 +1,11 @@
 const passport = require('passport');
+require('dotenv').config("./.env");
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
 const GitHubStrategy = require('passport-github2').Strategy;
 const User = require('../models/user-model');
 const jwt = require('jsonwebtoken');
 const tokenCache = require('../utils/cache');
+
 
 const JWT_SECRET = process.env.JWT_SECRET || 'your_jwt_secret';
 
@@ -11,7 +13,7 @@ const JWT_SECRET = process.env.JWT_SECRET || 'your_jwt_secret';
 passport.use(new GoogleStrategy({
     clientID: process.env.GOOGLE_CLIENT_ID,
     clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-    callbackURL: process.env.GOOGLE_CALL_BACK_URL
+    callbackURL: process.env.GOOGLE_CALL_BACK_URL,
 }, async (accessToken, refreshToken, profile, done) => {
     try {
         // Find or create user
