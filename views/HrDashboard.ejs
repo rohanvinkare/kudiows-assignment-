@@ -16,6 +16,20 @@
           white-space: nowrap;
         }
       }
+      .drive-link {
+        background-color: #4caf50; /* Green background */
+        color: white; /* White text */
+        padding: 10px 20px;
+        border-radius: 5px;
+        text-align: center;
+        text-decoration: none;
+        font-weight: bold;
+        display: inline-block;
+        transition: background-color 0.3s ease;
+      }
+      .drive-link:hover {
+        background-color: #45a049; /* Darker green on hover */
+      }
     </style>
   </head>
   <body class="bg-gray-100">
@@ -33,6 +47,15 @@
       </div>
     </nav>
     <div class="container mx-auto p-8">
+      <div class="mb-6 text-center">
+        <a
+          href="https://drive.google.com/drive/u/1/folders/14cbWMJFVLtxJHY-hXM5PEGLaGvJ9ALMg"
+          class="drive-link"
+          target="_blank"
+        >
+          View All Resumes on Google Drive
+        </a>
+      </div>
       <h2 class="text-3xl font-bold text-blue-600 mb-6">All Resumes</h2>
       <table
         class="min-w-full bg-white border border-gray-300 rounded-lg shadow-md"
@@ -49,15 +72,6 @@
           <!-- Rows will be inserted here by JavaScript -->
         </tbody>
       </table>
-      <div class="mt-6">
-        <a
-          href="https://drive.google.com/drive/u/1/folders/14cbWMJFVLtxJHY-hXM5PEGLaGvJ9ALMg"
-          class="text-blue-600 underline"
-          target="_blank"
-        >
-          View all resumes on Google Drive
-        </a>
-      </div>
     </div>
   </body>
   <script>

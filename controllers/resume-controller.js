@@ -1,8 +1,6 @@
-const tokenCache = require('../utils/cache');
 const { google } = require('googleapis');
 const { Readable } = require('stream');
 const path = require('path');
-const fs = require('fs');
 require('dotenv').config(); // Load environment variables
 
 // Configure OAuth2 client using environment variables
@@ -31,7 +29,7 @@ function bufferToStream(buffer) {
 }
 
 /**
- * Upload resume to Google Drive
+ * Upload resume to Google Drive without renaming the file
  * @param {Object} req - Express request object
  * @param {Object} res - Express response object
  */
@@ -41,17 +39,8 @@ exports.uploadResume = async (req, res) => {
             return res.status(400).json({ error: 'No file uploaded' });
         }
 
-        // Fetch email from the cache
-        const email = req.cookies.email; // Assuming email is stored in a cookie
-        if (!email) {
-            return res.status(400).json({ error: 'User email not found in cache' });
-        }
-
-        // Rename the file with the email
-        const fileName = `${email}_${req.file.originalname}`;
-
         const fileMetadata = {
-            name: fileName,
+            name: req.file.originalname, // Use the original file name
             parents: [process.env.GOOGLE_DRIVE_FOLDER_ID] // Folder ID in Google Drive
         };
 
