@@ -19,6 +19,9 @@ const mongoURI = process.env.MONGODB_URI;
 const app = express();
 const upload = multer();
 
+
+
+
 // Serve static files from the 'public' directory
 app.use(express.static('public'));
 
